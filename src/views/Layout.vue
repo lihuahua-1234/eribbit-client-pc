@@ -16,13 +16,20 @@
 import AppNavbar from '@/components/app-topnav'
 import AppHeader from '@/components/app-header'
 import AppFooter from '@/components/app-footer'
+import { useStore } from 'vuex'
 export default {
   components: {
     AppNavbar,
     AppHeader,
     AppFooter
   },
-  name: 'LaYout'
+  name: 'LaYout',
+  // 获取分类数据
+  setup () {
+    const store = useStore()
+    // 调用actions请求
+    store.dispatch('category/getList')
+  }
 }
 </script>
 

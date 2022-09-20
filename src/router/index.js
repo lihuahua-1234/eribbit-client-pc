@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-const Layout = () => import('@/views/LaYout')
+const Layout = () => import('@/views/Layout')
 const Home = () => import('@/views/home')
+const SubCategory = () => import('@/views/category/sub')
+const TopCategory = () => import('@/views/category/index')
 // 路由规则
 const routes = [
   // 一级路由布局容器
@@ -8,7 +10,9 @@ const routes = [
     path: '/',
     component: Layout,
     children: [
-      { path: '/', component: Home }
+      { path: '/', component: Home },
+      { path: '/category/:id', component: TopCategory }, // 一级分类地址
+      { path: '/category/sub/:id', component: SubCategory } // 二级分类地址
     ]
   }
 ]
