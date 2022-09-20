@@ -1,10 +1,18 @@
 <template>
-<div>App</div>
+<div>App<button @click="fn">测试</button></div>
 </template>
 
 <script>
+import request from '@/utils/request'
 export default {
-  name: 'App'
+  name: 'App',
+  setup () {
+    const fn = () => {
+      request('/member/profile', 'post', { a: 10 })
+    }
+
+    return { fn }
+  }
 }
 </script>
 
