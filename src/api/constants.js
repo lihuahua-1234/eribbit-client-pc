@@ -1,5 +1,5 @@
 // 小兔鲜常量数据
-
+// API接口 http://zhoushugang.gitee.io/erabbit-client-pc-document/api.html
 // 默认9个分类
 export const topCategory = [
   '居家',

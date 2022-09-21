@@ -14,7 +14,7 @@ export default {
     // payload 载荷， 所有的分类集合
     setList (state, payload) {
       state.list = payload
-      console.log(payload)
+      console.log('分类数据', payload)
     },
     // 定义show和hide函数，控制当前分类的二级分类显示或隐藏
     show (state, id) { // id 靠外面点击传进来 app-header-nav.vue
