@@ -1,24 +1,107 @@
 <!--轮播图基础结构-->
 <template>
-  <div class='xtx-carousel'>
+<!--mouseleave鼠标离开 开启定时器, mouseenter鼠标移入 暂停播放-->
+  <div class='xtx-carousel' @mouseleave="start()" @mouseenter="stop()">
+      <!--轮播图图片容器-->
     <ul class="carousel-body">
-      <li class="carousel-item fade">
+        <!--fade显示的图加上-->
+      <li class="carousel-item" v-for="(item, i) in sliders" :key="i" :class="{fade: index === i}">
         <RouterLink to="/">
-          <img src="http://yjy-xiaotuxian-dev.oss-cn-beijing.aliyuncs.com/picture/2021-04-15/1ba86bcc-ae71-42a3-bc3e-37b662f7f07e.jpg" alt="">
+          <img :src="item.imgUrl" alt="">
         </RouterLink>
       </li>
     </ul>
-    <a href="javascript:;" class="carousel-btn prev"><i class="iconfont icon-angle-left"></i></a>
-    <a href="javascript:;" class="carousel-btn next"><i class="iconfont icon-angle-right"></i></a>
+    <!--上一张-->
+    <a @click="toggle(-1)" href="javascript:;" class="carousel-btn prev"><i class="iconfont icon-angle-left"></i></a>
+    <!--下一张-->
+    <a @click="toggle(1)" href="javascript:;" class="carousel-btn next"><i class="iconfont icon-angle-right"></i></a>
+    <!--指示容器，圆圈-->
     <div class="carousel-indicator">
-      <span v-for="i in 5" :key="i"></span>
+        <!--active激活点-->
+      <span @click="index=i " v-for="(item, i) in sliders" :key="i" :class="{active: index === i}"></span>
     </div>
   </div>
 </template>
 
 <script>
+import { onUnmounted, ref, watch } from 'vue'
 export default {
-  name: 'XtxCarousel'
+  props: {
+    sliders: {
+      type: Array,
+      default: () => []
+    },
+    // 是否自动轮播
+    autoPlay: {
+      type: Boolean,
+      default: false
+    },
+    // 间隔时长
+    duration: {
+      type: Number,
+      default: 3000
+    }
+  },
+  name: 'XtxCarousel',
+  setup (props) {
+    // 控制图片的索引, 默认显示第0张图片
+    const index = ref(0)
+
+    // 1.自动轮播逻辑
+    let timer = null
+    const autoPlayFn = () => {
+      clearInterval(timer) // 防止定时器重复添加 每次重新开启之前清掉之前的定时器
+      // 自动播放逻辑,每格多久切换索引
+      timer = setInterval(() => {
+        index.value++
+        if (index.value >= props.sliders.length) {
+          index.value = 0
+        }
+      }, props.duration)
+    }
+    // 需要监听sliders数据变化,判断如果有数据且autoPlay是true
+    watch(() => props.sliders, (newVal) => {
+      if (newVal.length && props.autoPlay) {
+        autoPlayFn()
+      }
+      // 默认执行 immediate: true
+    }, { immediate: true })
+
+    // 2. 鼠标进入暂停轮播， 离开开启自动播放(有开启条件)
+    const stop = () => { // 停止
+      if (timer) clearInterval(timer)
+    }
+
+    const start = () => { // 开启
+      if (props.sliders.length && props.autoPlay) { // 要有数据，并且要有自动播放
+        autoPlayFn()
+      }
+    }
+
+    // 3.点击点可以切换，上一张下一张s
+    const toggle = (step) => {
+      // 将要改变的索引
+      const newIndex = index.value + step
+      // 超出的情况， 太大了
+      if (newIndex > (props.sliders.length - 1)) {
+        index.value = 0
+        return
+      }
+      // 超出的情况， 小大了
+      if (newIndex < 0) {
+        index.value = props.sliders.length - 1
+        return
+      }
+      // 正常情况
+      index.value = newIndex
+    }
+
+    // 4. 组件卸载时，清除定时器
+    onUnmounted(() => {
+      clearInterval(timer)
+    })
+    return { index, stop, start, toggle }
+  }
 }
 </script>
 <style scoped lang="less">
