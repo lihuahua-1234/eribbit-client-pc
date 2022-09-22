@@ -3,6 +3,7 @@
   <div class="home-new">
     <HomePanel title="新鲜好物" sub-title="新鲜出炉 品质靠谱">
       <template #right><XtxMore path="/" /></template>
+      <div ref="target" style="position: relative;height: 426px;">
     <!--面板内容-->
     <Transition name="fade"><!--Transition淡出效果-->
     <ul v-if="goods.length" class="goods-list">
@@ -17,6 +18,7 @@
       <!--goods没数据时，显示骨架动画-->
       <HomeSkeleton bg="#f0f9f4;" v-else />
       </Transition>
+    </div>
   </HomePanel>
   </div>
 </template>
@@ -26,6 +28,7 @@ import HomePanel from './home-panel.vue'
 import { ref } from 'vue'
 import { findNew } from '@/api/home'
 import HomeSkeleton from './home-skeleton.vue'
+import { useLazyData } from '@/hooks'
 export default {
   components: {
     HomePanel,
@@ -33,13 +36,16 @@ export default {
   },
   name: 'HomeNew',
   setup () {
-    const goods = ref([])
-    findNew().then(data => {
-      goods.value = data.result
-      console.log('新鲜好物', data.result)
-    })
-
-    return { goods }
+    // const goods = ref([])
+    // findNew().then(data => {
+    //   goods.value = data.result
+    //   console.log('新鲜好物', data.result)
+    // })
+    const target = ref(null)
+    // 第一个是目标元素, 第二个是请求函数方法
+    const result = useLazyData(target, findNew)
+    console.log('新鲜好物', result)
+    return { goods: result, target }
   }
 }
 </script>
