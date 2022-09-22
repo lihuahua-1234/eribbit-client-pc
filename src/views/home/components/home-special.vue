@@ -2,10 +2,12 @@
 <template>
   <HomePanel title="最新专题">
     <template v-slot:right><XtxMore /></template>
-    <div  class="special-list" ref="target">
+    <div ref="target">
+    <Transition name="fade"><!--Transition淡出效果-->
+    <div v-if="Special.length" class="special-list">
       <div class="special-item" v-for="item in Special" :key="item.id">
         <RouterLink to="/">
-          <img :src="item.cover" alt="" />
+          <img  v-lazy="item.cover" alt="" />
           <div class="meta">
             <p class="title">
               <span class="top ellipsis">{{item.title}}</span>
@@ -21,6 +23,9 @@
         </div>
       </div>
     </div>
+    <HomeSkeleton bg="#f0f9f4;" v-else />
+    </Transition>
+  </div>
   </HomePanel>
 </template>
 
@@ -28,9 +33,10 @@
 import HomePanel from './home-panel'
 import { useLazyData } from '@/hooks'
 import { findSpecial } from '@/api/home'
+import HomeSkeleton from './home-skeleton.vue'
 export default {
   name: 'HomeSpecial',
-  components: { HomePanel },
+  components: { HomePanel, HomeSkeleton },
   setup () {
     const { target, result } = useLazyData(findSpecial)
     console.log('最新专题', result)
@@ -40,6 +46,21 @@ export default {
 </script>
 
 <style scoped lang='less'>
+// 离开时候淡出动画效果
+.fade{
+  &-leave {
+    &-active {
+      position: absolute;
+      width: 100%;
+      transition: opacity .5s .2s;
+      z-index: 1;
+    }
+    &-to {
+      opacity: 0;
+    }
+  }
+}
+
 .home-panel {
   background: #f5f5f5;
 }
