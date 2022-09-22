@@ -54,6 +54,7 @@ export default {
       // 自动播放逻辑,每格多久切换索引
       timer = setInterval(() => {
         index.value++
+        // 如果index >= 轮播图最后一张， 重置设置index = 0
         if (index.value >= props.sliders.length) {
           index.value = 0
         }
@@ -83,7 +84,7 @@ export default {
       // 将要改变的索引
       const newIndex = index.value + step
       // 超出的情况， 太大了
-      if (newIndex > (props.sliders.length - 1)) {
+      if (newIndex > props.sliders.length - 1) {
         index.value = 0
         return
       }
