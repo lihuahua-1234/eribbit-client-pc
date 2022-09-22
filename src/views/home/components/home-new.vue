@@ -25,7 +25,6 @@
 
 <script>
 import HomePanel from './home-panel.vue'
-import { ref } from 'vue'
 import { findNew } from '@/api/home'
 import HomeSkeleton from './home-skeleton.vue'
 import { useLazyData } from '@/hooks'
@@ -41,9 +40,9 @@ export default {
     //   goods.value = data.result
     //   console.log('新鲜好物', data.result)
     // })
-    const target = ref(null)
-    // 第一个是目标元素, 第二个是请求函数方法
-    const result = useLazyData(target, findNew)
+    // 1.target 去绑定一个监听对象，最好是dom
+    // 2.是传入api函数， 内部获取调用，返回就是响应式数据
+    const { target, result } = useLazyData(findNew)
     console.log('新鲜好物', result)
     return { goods: result, target }
   }

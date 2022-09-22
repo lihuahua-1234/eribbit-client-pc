@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import HomePanel from './home-panel.vue'
 import { findHot } from '@/api/home'
 import HomeSkeleton from './home-skeleton.vue'
@@ -41,8 +40,7 @@ export default {
     //   goods.value = data.result
     //   console.log('人气推荐', data.result)
     // })
-    const target = ref(null)
-    const result = useLazyData(target, findHot)
+    const { target, result } = useLazyData(findHot)
     console.log('人气推荐', result)
     return { goods: result, target }
   }
