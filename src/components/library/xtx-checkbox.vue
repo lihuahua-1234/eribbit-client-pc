@@ -27,11 +27,11 @@ export default {
     // useVModel三个参 props, '字段名字', emit
     const checked = useVModel(props, 'modelValue', emit)
     const changechecked = () => {
-      //   const newVal = !checked.value
+      const newVal = !checked.value
       // 通知父组件
-      //   checked.value = newVal
-      // 通知父组件
-      checked.value = !checked.value
+      checked.value = newVal
+      // 让组件支持change事件
+      emit('change', newVal)
     }
     return { checked, changechecked }
   }

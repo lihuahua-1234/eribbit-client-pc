@@ -30,11 +30,8 @@
           <p class="tag">温暖柔软，品质之选</p>
           <XtxMore :path="`/category/sub/${sub.id}`"/>
         </div>
-        <div class="body" v-if="sub.goods.length">
+        <div class="body">
           <GoodsItem v-for="goods in sub.goods" :key="goods.id" :goods="goods" />
-        </div>
-        <div class="body" v-else>
-          <GoodsItem v-for="i in 5" :key="i" />
         </div>
       </div>
   </div>

@@ -1,8 +1,8 @@
 <!--封装单个组件-->
 <template>
-<div v-if="goods.length">
+<div v-if="goods">
     <RouterLink :to="`/product/${goods.id}`" class='goods-item'>
-    <img v-lazy="goods.picture" alt="">
+    <img  v-lazy="goods.picture" alt="">
     <p class="name ellipsis">{{goods.name}}</p>
     <p class="desc ellipsis">{{goods.desc}}</p>
     <p class="price">&yen;{{goods.price}}</p>
