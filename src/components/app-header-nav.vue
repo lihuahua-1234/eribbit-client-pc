@@ -2,8 +2,8 @@
 <template>
     <ul class="app-header-nav">
         <li class="home"><RouterLink to="/">首页</RouterLink></li>
-        <!--mouseenter：鼠标经过  mouseleave：鼠标离开-->
-        <li v-for="item in list" :key="item.id" @mouseenter="show(item)" @mouseleave="hide(item)">
+        <!--mouseenter：鼠标移动  mouseleave：鼠标离开-->
+        <li v-for="item in list" :key="item.id" @mousemove="show(item)" @mouseleave="hide(item)">
             <RouterLink @click="hide(item)" :to="`/category/${item.id}`">{{item.name}}</RouterLink>
          <div class="layer" :class="{open:item.open}"> <!--当前分类的值为真，就显示对应的layer-->
         <ul>
