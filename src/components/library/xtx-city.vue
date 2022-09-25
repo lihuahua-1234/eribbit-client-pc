@@ -98,17 +98,17 @@ export default {
     })
     // 当点击按钮的时候记录
     const changeItem = (item) => {
-      if (item.value === 0) {
+      if (item.level === 0) {
         // 省
         changeReuslt.provinceCode = item.code
         changeReuslt.provinceName = item.name
       }
-      if (item.value === 1) {
+      if (item.level === 1) {
         // 市
         changeReuslt.cityCode = item.code
         changeReuslt.cityName = item.name
       }
-      if (item.value === 2) {
+      if (item.level === 2) {
         // 地区
         changeReuslt.countyCode = item.code
         changeReuslt.countyName = item.name
