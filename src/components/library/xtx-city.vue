@@ -2,25 +2,31 @@
 <template>
   <div class="xtx-city" ref="target">
     <div class="select" @click="toggle()" :class="{active:visible}">
-      <span class="placeholder">请选择配送地址</span>
-      <span class="value"></span>
+      <span v-if="!fullLocation" class="placeholder">请选择配送地址</span>
+      <span v-else class="value">{{ fullLocation }}</span>
       <i class="iconfont icon-angle-down"></i>
     </div>
     <div class="option" v-if="visible">
       <div v-if="loading" class="loading"></div>
         <template v-else>
-        <span class="ellipsis" v-for="item in currList" :key="item.code">{{item.name}}</span>
+        <span @click="changeItem(item)" class="ellipsis" v-for="item in currList" :key="item.code">{{item.name}}</span>
         </template>
     </div>
   </div>
 </template>
 <script>
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import axios from 'axios'
 export default {
+  props: {
+    fullLocation: {
+      type: String,
+      default: ''
+    }
+  },
   name: 'XtxCity',
-  setup () {
+  setup (props, { emit }) {
     // 显示和隐藏，默认隐藏
     const visible = ref(false)
 
@@ -29,7 +35,7 @@ export default {
     // 正在加载数据
     const loading = ref(false)
 
-    // 提供打开函数
+    // 提供 打开状态函数
     const open = () => {
       visible.value = true
       // 获取地区数据
@@ -39,8 +45,12 @@ export default {
         allCityData.value = data
         loading.value = false
       })
+      // 清空之前选择
+      for (const key in changeReuslt) {
+        changeReuslt[key] = ''
+      }
     }
-    // 提供关闭函数
+    // 提供 关闭状态函函数
     const close = () => {
       visible.value = false
     }
@@ -61,13 +71,55 @@ export default {
     // 实现计算属性：获取当前显示的地区数组
     const currList = computed(() => {
       // 默认显示省一级
-      const list = allCityData.value
+      let list = allCityData.value
       // 可能:市一级
+      if (changeReuslt.provinceCode && changeReuslt.provinceName) {
+        list = list.find(p => p.code === changeReuslt.provinceCode).areaList // 取到了对应省的市
+      }
       // 可能:县地区
+      if (changeReuslt.cityCode && changeReuslt.cityName) {
+        list = list.find(c => c.code === changeReuslt.cityCode).areaList // 取到了对应省市的县
+      }
       return list
     })
-
-    return { visible, toggle, target, loading, currList }
+    // 定义选择的 省市区 数据
+    const changeReuslt = reactive({
+      // 省
+      provinceCode: '',
+      provinceName: '',
+      // 市
+      cityCode: '',
+      cityName: '',
+      // 地区
+      countyCode: '',
+      countyName: '',
+      // 完整地址
+      fullLocation: ''
+    })
+    // 当点击按钮的时候记录
+    const changeItem = (item) => {
+      if (item.value === 0) {
+        // 省
+        changeReuslt.provinceCode = item.code
+        changeReuslt.provinceName = item.name
+      }
+      if (item.value === 1) {
+        // 市
+        changeReuslt.cityCode = item.code
+        changeReuslt.cityName = item.name
+      }
+      if (item.value === 2) {
+        // 地区
+        changeReuslt.countyCode = item.code
+        changeReuslt.countyName = item.name
+        // 这市最后一级了选完了拼接省市区,完整路径
+        changeReuslt.fullLocation = `${changeReuslt.provinceName}${changeReuslt.cityName}${changeReuslt.countyName}`
+        // 关闭对话框，通知父组件
+        close()
+        emit('change', changeReuslt)
+      }
+    }
+    return { visible, toggle, target, loading, currList, changeItem }
   }
 }
 

@@ -13,7 +13,7 @@
     </dl>
     <dl>
       <dt>配送</dt>
-      <dd>至<XtxCity /> </dd>
+      <dd>至<XtxCity @change="changeCity" :fullLocation="fullLocation" /> </dd>
     </dl>
     <dl>
       <dt>服务</dt>
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
   props: {
     goods: {
@@ -35,7 +36,34 @@ export default {
       default: () => {}
     }
   },
-  name: 'GoodName'
+  name: 'GoodName',
+  setup (props) {
+    // 提供给后台的四项数据
+    // 默认情况(未登录)
+    const provinceCode = ref('110000') // 省
+    const cityCode = ref('119900') // 市
+    const countyCode = ref('110101') // 区
+    const fullLocation = ref('北京市 市辖区 东城区')
+    // 取出用户收货地址中默认的地址给四个数据赋值(已登录)
+    if (props.goods.userAddresses) {
+      const defaultAddresss = props.goods.userAddresses.find(item => item.isDefualt === 1)
+      if (defaultAddresss) {
+        provinceCode.value = defaultAddresss.provinceCode
+        cityCode.value = defaultAddresss.cityCode
+        countyCode.value = defaultAddresss.countyCode
+        fullLocation.value = defaultAddresss.fullLocation
+      }
+    }
+
+    // 城市选中事件处理函数
+    const changeCity = (reuslt) => {
+      provinceCode.value = reuslt.provinceCode
+      cityCode.value = reuslt.cityCode
+      countyCode.value = reuslt.countyCode
+      fullLocation.value = reuslt.fullLocation
+    }
+    return { fullLocation, changeCity }
+  }
 }
 </script>
 
