@@ -71,16 +71,16 @@ export default {
     // 实现计算属性：获取当前显示的地区数组
     const currList = computed(() => {
       // 默认显示省一级
-      let list = allCityData.value
+      let currList = allCityData.value
       // 可能:市一级
       if (changeReuslt.provinceCode && changeReuslt.provinceName) {
-        list = list.find(p => p.code === changeReuslt.provinceCode).areaList // 取到了对应省的市
+        currList = currList.find(p => p.code === changeReuslt.provinceCode).areaList // 取到了对应省的市
       }
       // 可能:县地区
       if (changeReuslt.cityCode && changeReuslt.cityName) {
-        list = list.find(c => c.code === changeReuslt.cityCode).areaList // 取到了对应省市的县
+        currList = currList.find(c => c.code === changeReuslt.cityCode).areaList // 取到了对应省市的县
       }
-      return list
+      return currList
     })
     // 定义选择的 省市区 数据
     const changeReuslt = reactive({
