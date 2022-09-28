@@ -1,22 +1,16 @@
 <!--封装单个组件-->
 <template>
-<div v-if="goods">
-    <RouterLink :to="`/product/${goods.id}`" class='goods-item'>
-    <img  v-lazy="goods.picture" alt="">
+
+  <RouterLink :to="`/product/${goods.id}`" class='goods-item'>
+    <img :src="goods.picture" alt="">
     <p class="name ellipsis">{{goods.name}}</p>
     <p class="desc ellipsis">{{goods.desc}}</p>
     <p class="price">&yen;{{goods.price}}</p>
   </RouterLink>
-</div>
-<div v-else>
-    <ABC />
-  </div>
 </template>
 
 <script>
-import ABC from './abc.vue'
 export default {
-  components: { ABC },
   props: {
     goods: {
       type: Object,

@@ -54,19 +54,19 @@ export default {
       // 计算坐标
       const position = { x: 0, y: 0 }
       // 控制X轴方向的定位 0-200 之间
-      if (elementX.value < 100) position.left = 0
-      else if (elementX.value > 300) position.left = 200
-      else position.left = elementX.value - 100
+      if (elementX.value < 100) position.x = 0
+      else if (elementX.value > 300) position.x = 200
+      else position.x = elementX.value - 100
       // 控制Y轴方向的定位 0-200 之间
-      if (elementY.value < 100) position.top = 0
-      else if (elementY.value > 300) position.top = 200
-      else position.top = elementY.value - 100
+      if (elementY.value < 100) position.y = 0
+      else if (elementY.value > 300) position.y = 200
+      else position.y = elementY.value - 100
       // 设置遮罩容器的定位
       layerPosition.left = position.x + 'px'
       layerPosition.top = position.y + 'px'
       // 设置大背景的定位
-      largePosition.backgrundPositionX = -2 * position.x + 'px'
-      largePosition.backgroundPositionY = -2 * position.Y + 'px'
+      largePosition.backgroundPositionX = -2 * position.x + 'px'
+      largePosition.backgroundPositionY = -2 * position.y + 'px'
 
       //   // elementX
       //   if (elementX.value < 100) {
