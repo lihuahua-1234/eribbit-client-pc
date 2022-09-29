@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-    <div class="sort">
+    <div class="sort" v-if="commentInfo">
       <span>排序：</span>
       <a
       @click="changeSort(null)"
@@ -50,6 +50,8 @@
             <span class="attr">{{formatSpecs(item.orderInfo.specs)}}</span>
           </div>
           <div class="text">{{item.content}}</div>
+          <!--评论图片组件-->
+          <GoodsCommentImage v-if="item.pictures.length" :pictures="item.pictures"/>
           <div class="time">
             <span>{{item.createTime}}</span>
             <span class="zan"><i class="iconfont icon-dianzan"></i>{{item.praiseCount}}</span>
@@ -57,18 +59,24 @@
         </div>
       </div>
     </div>
+    <!--分页组件-->
+    <XtxPagination v-if="total" @current-page="currentPage" :total="total" :pageSize="reqParams.pageSize" :currentPage="reqParams.page"/>
   </div>
 </template>
 <script>
 import { inject, reactive, ref, watch } from 'vue'
 import { findGoodsCommentInfo, findGoodsCommentList } from '@/api/product'
+import GoodsCommentImage from './goods-comment-image.vue'
 export default {
+  components: {
+    GoodsCommentImage
+  },
   name: 'GoodsComment',
   setup () {
     // 1.获取评价信息
     const commentInfo = ref(null)
     const goods = inject('goods')
-    findGoodsCommentInfo(goods.id).then(data => {
+    findGoodsCommentInfo(goods.value.id).then(data => {
       data.result.tags.unshift(
         { title: '全部评价', tagCount: data.result.evaluateCount, type: 'all' },
         { title: '有图', tagCount: data.result.hasPictureCount, type: 'img' })
@@ -121,10 +129,12 @@ export default {
 
     // 5.初始化需要发请求，筛选条件发生改变发请求
     const commentList = ref([])
+    const total = ref(0)
     watch(reqParams, (newVal) => {
       // console.log('监听了')
-      findGoodsCommentList(goods.id, reqParams).then(data => {
+      findGoodsCommentList(goods.value.id, reqParams).then(data => {
         commentList.value = data.result.items
+        total.value = data.result.counts
         console.log('筛选条件发生变化', data.result.items)
       })
     }, { immediate: true })
@@ -140,6 +150,11 @@ export default {
       return nickname.substr(0, 1) + '****' + nickname.substr(-1)
     }
 
+    // 9.实现分页切换
+    const currentPage = (newPage) => {
+      reqParams.page = newPage
+    }
+
     return {
       commentInfo,
       currentTagIndex,
@@ -148,7 +163,9 @@ export default {
       commentList,
       changeSort,
       formatSpecs,
-      formatNickname
+      formatNickname,
+      total,
+      currentPage
     }
   }
 }

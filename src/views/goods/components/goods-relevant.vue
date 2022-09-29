@@ -34,7 +34,7 @@ export default {
       // data.result 商品列表，数据结构[16个]
       // 将data.result数据赋值给 sliders 数据， 保证数据结构正确
       const pageSize = 4
-      const pageCount = Math.ceil(data.result.length / pageSize)
+      const pageCount = Math.ceil(data.result.length / pageSize) // 向上取整Math.ceil
       for (let i = 0; i < pageCount; i++) {
         // 每循环一次就往数组里添加4条数据
         sliders.value.push(data.result.slice(pageSize * i, pageSize * (i + 1)))
