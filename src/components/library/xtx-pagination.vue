@@ -39,7 +39,7 @@ export default {
     // 3. 总页数 = 总条数 / 每一页条数 并且向上取整
     const myTotal = ref(100) // 总条数
     const myPageSize = ref(10) // 每一页条数
-    // 其他数据(总页数， 起始按钮，结束按钮，按钮数组) 依赖上面数据得到
+    // 其他数据(总页数，起始按钮，结束按钮，按钮数组) 依赖上面数据得到
     const pager = computed(() => {
       // 求总页数
       const PageCount = Math.ceil(myTotal.value / myPageSize.value)
@@ -62,7 +62,7 @@ export default {
         end = PageCount
         start = (end - count + 1) < 1 ? 1 : (end - count + 1)
       }
-      // 5. 提供计算数据
+      // 5. 提供计算数据 按钮数组
       const btnArr = []
       for (let i = start; i <= end; i++) {
         btnArr.push(i)

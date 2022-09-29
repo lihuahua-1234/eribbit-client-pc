@@ -60,7 +60,13 @@
       </div>
     </div>
     <!--分页组件-->
-    <XtxPagination v-if="total" @current-page="currentPage" :total="total" :pageSize="reqParams.pageSize" :currentPage="reqParams.page"/>
+    <XtxPagination
+    v-if="total"
+    @current-page="currentPage"
+    :total="total"
+    :pageSize="reqParams.pageSize"
+    :currentPage="reqParams.page"
+    />
   </div>
 </template>
 <script>
