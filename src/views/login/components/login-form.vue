@@ -58,7 +58,9 @@
           <div class="input">
             <i class="iconfont icon-code"></i>
             <Field :class="{error:errors.code}" v-model="form.code" name="code" type="text" placeholder="请输入验证码" />
-            <span class="code">发送验证码</span>
+            <span @click="send()" class="code">
+              {{time === 0 ? '发送验证码' : `${time}秒后发送`}}
+            </span>
           </div>
         <div
           class="error"
@@ -96,10 +98,14 @@
   </div>
 </template>
 <script>
-import { reactive, ref, watch } from 'vue'
+import { onUnmounted, reactive, ref, watch } from 'vue'
 import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
 import Message from '@/components/library/Message'
+import { userAccountLogin, userMobileLogin, userMobileLoginMsg } from '@/api/user'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import { useIntervalFn } from '@vueuse/core'
 export default ({
   components: { Form, Field },
   name: 'LoginForm',
@@ -150,14 +156,89 @@ export default ({
     // const { proxy } = getCurrentInstance()
     // proxy.$message({ text: '1123' })
 
+    const store = useStore()
+    const router = useRouter() // 调api方法的
+    const route = useRoute() // 拿路由信息的
+
     // 5.需要在点击登录的时候对整体表单进行校验
     const login = async () => {
       // Form组件提供了一个 validate 函数作为整体表单校验，但是返回的是一个promise
       const valid = await formCom.value.validate()
       console.log(valid)
-      Message({ type: 'error', text: '用户名或密码错误' })
+
+      if (valid) {
+        let data = null
+        try {
+          // 区分手机号登录和账号登录
+          if (isMsgLogin.value) {
+          // 8. 手机号登录
+          // 8.1 准备一个API做手机号登录
+          // 8.2 调用API函数
+          // 8.3 成功：存储用户信息+跳转至源来页或首页 + 消息提示
+          // 8.4 失败：消息提示
+            const { mobile, code } = form
+            data = await userMobileLogin({ mobile, code })
+          } else {
+          // 6. 账号登录
+          // 6.1 准备一个API做账号登录
+          // 6.2 调用API函数
+          // 6.3 成功：存储用户信息+跳转至源来页或首页 + 消息提示
+          // 6.4 失败：消息提示
+          // form.account, form.password
+            const { account, password } = form
+            data = await userAccountLogin({ account, password })
+          }
+          // 存储用户信息
+          const { id, account, avatar, mobile, nickname, token } = data.result
+          store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
+          // 进行跳转
+          router.push(route.query.redirectUrl || '/')
+          // 成功消息提示
+          Message({ type: 'success', text: '登录成功' })
+        } catch (err) {
+          // 失败提示
+          if (err.response.data) {
+            Message({ type: 'error', text: err.response.data.message || '登录失败' })
+          }
+        }
+      }
     }
-    return { isMsgLogin, form, schema: mySchema, formCom, login }
+
+    // 7 发送验证码
+    // 7.1 绑定发送验证码按钮点击事件
+    // 7.2 校验手机号，如果成功才去发送短信(定义api)
+    // 7.3 请求成功开启60s的倒计时, 按钮不能再次点击， 倒计时结束恢复
+    // 7.4 如果失败，失败的校验样式显示出来
+    // 调用 vueuse 中的定时器函数返回 resume 开始 pause 暂停   false不立即开启
+    // useIntervalFn(回调函数， 执行事件，是否立即开启)
+    const time = ref(0)
+    const { resume, pause } = useIntervalFn(() => {
+      time.value--
+      if (time.value <= 0) {
+        pause()
+      }
+    }, 1000, false)
+    onUnmounted(() => { // 销毁定时器
+      pause()
+    })
+    // 发送短信
+    const send = async () => {
+      const valid = mySchema.mobile(form.mobile)
+      if (valid === true) {
+        // 通过
+        if (time.value === 0) {
+          // 没有倒计时才可以发送
+          await userMobileLoginMsg(form.mobile)
+          Message({ type: 'success', text: '发送成功' })
+          time.value = 60
+          resume()
+        }
+      } else {
+        // 失败, 使用 vee的错误函数提示错误信息, setFieldErrot(字段， 错误信息)
+        formCom.value.setFieldError('mobile', valid)
+      }
+    }
+    return { isMsgLogin, form, schema: mySchema, formCom, login, send, time }
   }
 })
 </script>
